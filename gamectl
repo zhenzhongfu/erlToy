@@ -58,12 +58,10 @@ init () {
 }
 
 start () {
-    if is_started; then # 函数返回值，0表示成功
+    if is_started; then 
         warn "节点$ERLANG_NODE已经启动"
         return 0
     fi
-        #-noinput -detached \
-echo $ERLANG_NODE
     $ERL \
         $NAME_FLAG $ERLANG_NODE \
         -config $SYSTEM_CONFIG \
