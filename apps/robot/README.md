@@ -3,11 +3,13 @@ robot
 
 An OTP application
 
-Build
+Run
 -----
-
-    $ rebar3 compile
-
-    ./gamectl robot
-    application:start(robot).
-    robot_ctl:command({do_robot, 1}).
+```shell
+$ ./gamectl robot
+```
+then
+```erlang
+(robot@127.0.0.1)1> application:start(robot).
+(robot@127.0.0.1)2> robot_ctl:command({do_robot, 1}).
+```
