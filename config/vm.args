@@ -1,0 +1,18 @@
+-setcookie game_cookie
++K true
++A30
+-connect_all true 
++K true 
+-smp true 
++P 500000 
++Q 65535
++t 10485760 
++fnu 
++hms 8192 
++zdbbl 81920
++A 100 
++sbt db 
++sub true 
++swct eager 
++spp true 
++zdbbl 65536

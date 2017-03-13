@@ -1,0 +1,152 @@
+#!/bin/bash
+ulimit -c unlimited
+
+ROOT=`cd $(dirname $0); pwd`
+CONFDIR=$ROOT/config
+LOGDIR=$ROOT/log
+SYSTEM_CONFIG=$CONFDIR/sys.config
+CONF_NAME=game.config
+EBINDIR=$ROOT/_build/default/lib/game/ebin
+
+ERL=erl
+
+EBINS="$ROOT/_build/default/lib/game/ebin \
+    $ROOT/_build/default/lib/lager/ebin \
+    $ROOT/_build/default/lib/mochiweb/ebin \
+    $ROOT/_build/default/lib/goldrush/ebin \
+    $ROOT/_build/default/lib/ranch/ebin \
+    $ROOT/_build/default/lib/protobuffs/ebin \
+    $ROOT/_build/default/lib/eredis/ebin \
+    $ROOT/_build/default/lib/robot/ebin "
+
+ERLANG_OPTS="`cat ${ROOT}/config/vm.args` \
+    -env ROOT ${ROOT} \
+    -env CONFDIR ${CONFDIR} \
+    -env LOGDIR ${LOGDIR} \
+    -env EBINDIR ${EBINDIR}
+    "
+
+APP_MOD=game_app
+
+VERIFY=true
+
+##################
+## function
+##################
+
+error() {
+    echo -e "\033[1;41m[错误]\033[0m 节点(${ERLANG_NODE}) $@"
+    exit 1
+}
+warn() {
+    echo -e "\033[1;43m[警告]\033[0m 节点(${ERLANG_NODE}) $@"
+    exit 1
+}
+echo2() {
+    echo -e "\033[1;42m[操作]\033[0m 节点(${ERLANG_NODE}) $@"
+    exit 0
+}
+
+getip() {
+    UNAME=`uname`
+    IP=`LANG=en_US; ifconfig | grep 'inet addr:' | head -n 1 | cut -d: -f 2 | awk '{print $1}'`
+    echo ${IP}
+}
+
+init () {
+    echo ""
+}
+
+start () {
+    if is_started; then # 函数返回值，0表示成功
+        warn "节点$ERLANG_NODE已经启动"
+        return 0
+    fi
+        #-noinput -detached \
+echo $ERLANG_NODE
+    $ERL \
+        $NAME_FLAG $ERLANG_NODE \
+        -config $SYSTEM_CONFIG \
+        ${ERLANG_OPTS} \
+        -pa $EBINS \
+        -s ${APP_MOD} start 
+}
+
+verify () {
+    if [ "$VERIFY" = "true" ]; then 
+        echo -n "确认执行$1?(Yes/No):"
+        read option
+        case $option in 
+            "Yes");;
+            *)exit 1;;
+        esac
+    fi
+}
+
+usage () {
+    echo ""
+    echo "usage:"
+    echo "$0 action [option]"
+    echo "action:"
+    echo "  start"
+    echo "  robot"
+    echo "  line    统计代码行数"
+    echo ""
+    echo ""
+}
+
+is_started() {
+    return 1
+    NUM=`ps -ef|grep erl|grep ${ERLANG_NODE}|grep -v "grep"|wc -l`
+    if [ $NUM -eq 0 ]; then
+        return 1
+    fi
+    return 0
+}
+
+###################
+##
+###################
+
+STATUS_SUCCESS=0
+STATUS_ERROR=1
+
+[ -z "$HOST" ] && HOST=$(getip)
+if [ -z ${HOST} ]; then
+    error "get host failed!"
+fi;
+if [ "$HOST" == "localhost" ]; then
+    NAME_FLAG=-sname
+else
+    NAME_FLAG=-name
+fi
+ERLANG_NODE=game
+
+while [ $# -ne 0 ] ; do
+    PARAM=$1
+    shift
+    case $PARAM in
+        --) break;;
+        --node|-n) ERLANG_NODE=$1; shift ;;
+        --appmod|-m) APP_MOD=$1; shift ;;
+        --config|-f) CONF_NAME=$1; shift ;;
+        *) ARGS="$ARGS $PARAM" ;;
+    esac
+done
+
+# 根据host和node参数名字重新设置节点名
+ERLANG_NODE=$ERLANG_NODE@$HOST
+
+###############
+## start
+###############
+set -- $ARGS
+init
+ACTION=$1
+case ${ACTION} in
+'start') start;;
+'robot') ERLANG_NODE=robot@$HOST;start;;
+'line') find $ROOT/apps/game -name "*.erl"|xargs cat|wc -l;;
+*) usage; exit 1;;
+esac
+
