@@ -14,7 +14,7 @@ $ cd $DIR
 * change script permissions
 ```shell
 $ chmod +x gamectl
-$ chmod +x $DIR/apps/game/script/*.*
+$ chmod +x apps/game/script/*.*
 ```
 * build
 ```shell
