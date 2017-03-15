@@ -1,9 +1,9 @@
 # simple game demo
----
+-
 An OTP application, a simple game demo
 
 # Build & Run
------
+-
 * get rebar3 and put it into woker dir
 ```shell
 $ wget https://s3.amazonaws.com/rebar3/rebar3 && chmod +x rebar3
