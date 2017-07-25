@@ -42,7 +42,10 @@ init([Id]) ->
                     ?ERROR("connect server error:~p~n", [_Reason]),
                     exit({error, _Reason});
                 {ok, Sock} ->
-                    {ok, #state{id = Id, sock = Sock}}
+                    {ok, #state{id = Id, sock = Sock}};
+                _Other ->
+                    ?ERROR("connect server error:~p~n", [_Other]),
+                    exit({error, _Other})
             end;
         Other ->
             ?ALERT("regist badarg:~p:~p:~p~n", [Name, self(),Other]),

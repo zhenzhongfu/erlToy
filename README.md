@@ -11,8 +11,7 @@ $ cd $DIR
 
 * change script permissions
 ```shell
-$ chmod +x gamectl
-$ chmod +x apps/game/script/*.*
+$ chmod +x gamectl && chmod +x apps/game/script/*.*
 ```
 * build
 ```shell
@@ -21,4 +20,12 @@ $ make
 * run
 ```
 $ ./gamectl start
+```
+* run robot
+```shell
+$ ./gamectl robot
+```
+then
+```erlang
+(robot@127.0.0.1)1> robot_ctl:command({do_robot, 1}).
 ```

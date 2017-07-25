@@ -49,7 +49,8 @@ echo2() {
 
 getip() {
     UNAME=`uname`
-    IP=`LANG=en_US; ifconfig | grep 'inet addr:' | head -n 1 | cut -d: -f 2 | awk '{print $1}'`
+    #IP=`LANG=en_US; ifconfig | grep 'inet addr:' | head -n 1 | cut -d: -f 2 | awk '{print $1}'`
+    IP=`LANG=en_US; ifconfig | grep 'inet ' | head -n 1 | cut -d: -f 2 | awk '{print $2}'`
     echo ${IP}
 }
 
@@ -62,6 +63,7 @@ start () {
         warn "节点$ERLANG_NODE已经启动"
         return 0
     fi
+    echo ${APP_MOD} $ERLANG_NODE
     $ERL \
         $NAME_FLAG $ERLANG_NODE \
         -config $SYSTEM_CONFIG \
@@ -143,7 +145,7 @@ init
 ACTION=$1
 case ${ACTION} in
 'start') start;;
-'robot') ERLANG_NODE=robot@$HOST;start;;
+'robot') ERLANG_NODE=robot@$HOST;APP_MOD=robot_app;start;;
 'line') find $ROOT/apps/game -name "*.erl"|xargs cat|wc -l;;
 *) usage; exit 1;;
 esac

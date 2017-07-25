@@ -27,11 +27,11 @@ init(_Args) ->
     process_flag(trap_exit, true),
     {ok, []}.
 
-%% 登录单个指定账号
+%% 登录单个指定client
 handle_call({do_robot_1, Id}, _From, State) ->
     supervisor:start_child(robot_sup, [Id]),
     {reply, ok, State};
-%% 批量登录N个随机账号
+%% 批量登录N个随机client
 handle_call({do_robot_n, N}, _From, State) ->
     util:seed(),
     Id = util:rand(16#ffffffff),
