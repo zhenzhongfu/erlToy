@@ -28,4 +28,5 @@ $ ./gamectl robot
 then
 ```erlang
 (robot@127.0.0.1)1> robot_ctl:command({do_robot, 1}).
+(robot@127.0.0.1)1> robot_ctl:command({do_robot_n, 10}).
 ```
