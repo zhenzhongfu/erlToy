@@ -1,4 +1,4 @@
-# simple game demo
+# erlToy
 An OTP application, a simple game demo
 
 # Build & Run
